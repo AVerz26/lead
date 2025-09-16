@@ -4,6 +4,8 @@ import pandas as pd
 import requests
 import re
 import time
+import ast
+
 
 st.set_page_config(page_title="Lead Finder", layout="wide")
 
@@ -122,17 +124,16 @@ if st.button("🔍 Buscar Leads"):
                 st.success(f"{len(df_leads)} leads encontrados!")
                 st.dataframe(df_leads)
                 
-                # Mostra mapa
+                # garante que coordenadas seja dicionário
+                df_leads["coordenadas"] = df_leads["coordenadas"].apply(
+                    lambda x: ast.literal_eval(str(x)) if x else {}
+                )
+                
+                # cria colunas separadas
+                df_leads["latitude"] = df_leads["coordenadas"].apply(lambda x: x.get("latitude"))
+                df_leads["longitude"] = df_leads["coordenadas"].apply(lambda x: x.get("longitude"))
+                
+                # Mostra mapa só com os que têm coordenadas
                 mapa_df = df_leads.dropna(subset=["latitude", "longitude"])
-                import ast  # converte string dict para dict real
-
-                if not df.empty:
-                    # garante que coordenadas seja dicionário
-                    df["coordenadas"] = df["coordenadas"].apply(lambda x: ast.literal_eval(str(x)) if x else {})
-                    
-                    # cria colunas separadas
-                    df["latitude"] = df["coordenadas"].apply(lambda x: x.get("latitude"))
-                    df["longitude"] = df["coordenadas"].apply(lambda x: x.get("longitude"))
-                    
-                    # agora pode mandar pro mapa
-                    st.map(df[["latitude", "longitude"]])
+                if not mapa_df.empty:
+                    st.map(mapa_df[["latitude", "longitude"]])

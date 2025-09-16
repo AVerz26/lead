@@ -42,7 +42,6 @@ def buscar_leads(area, cidade, num_resultados, api_key, delay=2):
             "hl": "pt",
             "gl": "br",
             "start": start,     # sempre múltiplo de 20
-            "num": per_page,    # até 20 por página
             "api_key": api_key
         }
 

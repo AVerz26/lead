@@ -26,36 +26,45 @@ if SERPAPI_KEY:
 else:
   st.info("Por favor, insira a sua SerpApi API Key para continuar.")
 
-def buscar_leads(area, cidade, num_resultados, api_key):
+def buscar_leads(area, cidade, num_resultados, api_key, delay=2):
     """
-    Consulta o Google Maps via SerpApi e retorna leads básicos.
+    Consulta o Google Maps via SerpApi e retorna leads básicos com paginação.
     """
     query = f"{area} em {cidade}"
-    search = GoogleSearch({
-        "q": query,
-        "engine": "google_maps",
-        "google_domain": "google.com.br",
-        "hl": "pt",
-        "gl": "br",
-        "num": num_resultados,
-        "api_key": api_key
-    })
-    
-    resultados = search.get_dict()
-    leads = resultados.get("local_results", [])
+    per_page = 20
     dados = []
-    for lead in leads:
-        dados.append({
-            "nome": lead.get("title"),
-            "telefone": lead.get("phone"),
-            "site": lead.get("website"),
-            "endereco": lead.get("address"),
-            "rating": lead.get("rating"),
-            "avaliacoes": lead.get("reviews"),
-            "coordenadas": lead.get("gps_coordinates")
-        })
-    
+
+    for start in range(0, num_resultados, per_page):
+        params = {
+            "q": query,
+            "engine": "google_maps",
+            "google_domain": "google.com.br",
+            "hl": "pt",
+            "gl": "br",
+            "start": start,     # sempre múltiplo de 20
+            "num": per_page,    # até 20 por página
+            "api_key": api_key
+        }
+
+        search = GoogleSearch(params)
+        resultados = search.get_dict()
+        leads = resultados.get("local_results", [])
+
+        for lead in leads:
+            dados.append({
+                "nome": lead.get("title"),
+                "telefone": lead.get("phone"),
+                "site": lead.get("website"),
+                "endereco": lead.get("address"),
+                "rating": lead.get("rating"),
+                "avaliacoes": lead.get("reviews"),
+                "coordenadas": lead.get("gps_coordinates")
+            })
+
+        time.sleep(delay)  # evita bloqueio na API
+
     df = pd.DataFrame(dados)
+
     for col in ["site", "telefone", "endereco"]:
         if col not in df.columns:
             df[col] = None

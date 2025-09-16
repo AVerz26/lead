@@ -20,7 +20,7 @@ if SERPAPI_KEY:
   cidade = st.text_input("Cidade (ex: Piracicaba, São Paulo)")
   radius = st.number_input("Raio em metros (não usado diretamente pelo Google Maps)", value=10000)
   
-  num_resultados = st.number_input("Número de resultados", min_value=1, max_value=100, value=20)
+  num_resultados = 20
   delay = 1
 
 else:
@@ -38,10 +38,9 @@ def buscar_leads(area, cidade, num_resultados, api_key, delay=2):
         params = {
             "q": query,
             "engine": "google_maps",
-            "type": "search",
+            "google_domain": "google.com.br",
             "hl": "pt",
             "gl": "br",
-            "start": starti,
             "api_key": api_key
         }
 
@@ -141,7 +140,3 @@ if st.button("🔍 Buscar Leads"):
                 df_leads["latitude"] = df_leads["coordenadas"].apply(lambda x: x.get("latitude"))
                 df_leads["longitude"] = df_leads["coordenadas"].apply(lambda x: x.get("longitude"))
                 
-                # Mostra mapa só com os que têm coordenadas
-                mapa_df = df_leads.dropna(subset=["latitude", "longitude"])
-                if not mapa_df.empty:
-                    st.map(mapa_df[["latitude", "longitude"]])

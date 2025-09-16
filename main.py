@@ -4,64 +4,81 @@ import pandas as pd
 import requests
 import re
 import time
+import ast 
+
 
 st.set_page_config(page_title="Lead Finder", layout="wide")
 
 st.title("🕵️‍♂️ Buscador de Leads")
 
-# Input da API Key
 SERPAPI_KEY = st.text_input("Insira o seu SerpApi API Key", type="password")
 
-# Só mostra o restante se a chave estiver preenchida
 if SERPAPI_KEY:
-    # Inputs adicionais
-    area = st.text_input("Área de atuação (ex: advogado, imobiliária)")
-    cidade = st.text_input("Cidade (ex: Primavera do Leste, Mato Grosso)")
-    radius = st.number_input("Raio em metros (não usado diretamente pelo Google Maps)", value=10000)
-    num_resultados = st.number_input("Número de resultados", min_value=1, max_value=100, value=20)
-    delay = 1
 
-    # Botão de busca
-    if st.button("🔍 Buscar Leads"):
-        st.write(f"Chave válida! Pode executar a busca para {area} em {cidade}...")
+  # Inputs do usuário
+  area = st.text_input("Área de atuação (ex: advogado, imobiliária)")
+  cidade = st.text_input("Cidade (ex: Piracicaba, São Paulo)")
+  radius = st.number_input("Raio em metros (não usado diretamente pelo Google Maps)", value=10000)
+  
+  num_resultados = st.number_input("Número de resultados", min_value=1, max_value=100, value=20)
+  delay = 1
+
 else:
-    st.info("Por favor, insira a sua SerpApi API Key para continuar.")
-
+  st.info("Por favor, insira a sua SerpApi API Key para continuar.")
 
 def buscar_leads(area, cidade, num_resultados, api_key):
     """
-    Consulta o Google Maps via SerpApi e retorna leads básicos.
+    Consulta o Google Maps via SerpApi e retorna leads básicos,
+    iterando até alcançar num_resultados (aprox. 20 resultados por página).
     """
     query = f"{area} em {cidade}"
-    search = GoogleSearch({
-        "q": query,
-        "engine": "google_maps",
-        "google_domain": "google.com.br",
-        "hl": "pt",
-        "gl": "br",
-        "num": num_resultados,
-        "api_key": api_key
-    })
-    
-    resultados = search.get_dict()
-    leads = resultados.get("local_results", [])
     dados = []
-    for lead in leads:
-        dados.append({
-            "nome": lead.get("title"),
-            "telefone": lead.get("phone"),
-            "site": lead.get("website"),
-            "endereco": lead.get("address"),
-            "rating": lead.get("rating"),
-            "avaliacoes": lead.get("reviews"),
-            "coordenadas": lead.get("gps_coordinates")
+
+    # Cada página do SerpApi traz até 20 resultados
+    paginas = (num_resultados // 20) + 1
+
+    for i in range(paginas):
+        search = GoogleSearch({
+            "q": query,
+            "engine": "google_maps",
+            "google_domain": "google.com.br",
+            "hl": "pt",
+            "gl": "br",
+            "start": i * 20,
+            "api_key": api_key
         })
-    
-    df = pd.DataFrame(dados)
+
+        resultados = search.get_dict()
+        leads = resultados.get("local_results", [])
+
+        if not leads:  # se não vier nada, para pra não gastar crédito
+            break
+
+        for lead in leads:
+            dados.append({
+                "nome": lead.get("title"),
+                "telefone": lead.get("phone"),
+                "site": lead.get("website"),
+                "endereco": lead.get("address"),
+                "rating": lead.get("rating"),
+                "avaliacoes": lead.get("reviews"),
+                "coordenadas": lead.get("gps_coordinates")
+            })
+
+        # Se já bateu a quantidade pedida, para
+        if len(dados) >= num_resultados:
+            break
+
+    # monta dataframe
+    df = pd.DataFrame(dados[:num_resultados])
+
+    # garante colunas principais
     for col in ["site", "telefone", "endereco"]:
         if col not in df.columns:
             df[col] = None
+
     return df
+
 
 def extrair_emails_do_site(url):
     if not url:
@@ -119,14 +136,21 @@ if st.button("🔍 Buscar Leads"):
         st.warning("Por favor, preencha todos os campos!")
     else:
         with st.spinner("Buscando leads..."):
-            df_leads = gerar_dataframe_completo(area, cidade, num_resultados, SERPAPI_KEY, delay)
+            df_leads = gerar_dataframe_completo(area, cidade, num_resultados, SERPAPI_KEY)
             if df_leads.empty:
                 st.info("Nenhum lead encontrado para os critérios informados.")
             else:
                 st.success(f"{len(df_leads)} leads encontrados!")
                 st.dataframe(df_leads)
                 
-                # Mostra mapa
-                mapa_df = df_leads.dropna(subset=["latitude", "longitude"])
-                if not mapa_df.empty:
-                    st.map(mapa_df[["latitude", "longitude"]])
+
+                if not df.empty:
+                    # garante que coordenadas seja dicionário
+                    df["coordenadas"] = df["coordenadas"].apply(lambda x: ast.literal_eval(str(x)) if x else {})
+                    
+                    # cria colunas separadas
+                    df["latitude"] = df["coordenadas"].apply(lambda x: x.get("latitude"))
+                    df["longitude"] = df["coordenadas"].apply(lambda x: x.get("longitude"))
+                    
+                    # agora pode mandar pro mapa
+                    st.map(df[["latitude", "longitude"]])

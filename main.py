@@ -11,7 +11,7 @@ st.title("🕵️‍♂️ Buscador de Leads")
 
 SERPAPI_KEY = st.text_input("Insira o seu SerpApi API Key", type="password")
 
-if SERPAP_KEY:
+if SERPAPI_KEY:
 
   # Inputs do usuário
   area = st.text_input("Área de atuação (ex: advogado, imobiliária)")

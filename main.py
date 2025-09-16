@@ -41,8 +41,8 @@ def buscar_leads(area, cidade, num_resultados, api_key, delay=2):
             "google_domain": "google.com.br",
             "hl": "pt",
             "gl": "br",
-            "start": 0,
-            "api_key": api_key
+            "api_key": api_key,
+            "start": 0
         }
 
         search = GoogleSearch(params)

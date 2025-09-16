@@ -7,29 +7,29 @@ import time
 import ast
 
 
-st.set_page_config(page_title="Lead Finder", layout="wide")
+st.set_page_config(page_title="Leads Finder", layout="wide")
 
-st.title("🕵️‍♂️ Buscador de Leads")
+st.title("Leads Researching")
 
-SERPAPI_KEY = st.text_input("Insira o seu SerpApi API Key", type="password")
+SERPAPI_KEY = st.text_input("SerpApi API Key", type="password")
 
 if SERPAPI_KEY:
 
   # Inputs do usuário
-  area = st.text_input("Área de atuação (ex: advogado, imobiliária)")
-  cidade = st.text_input("Cidade (ex: Piracicaba, São Paulo)")
-  radius = st.number_input("Raio em metros (não usado diretamente pelo Google Maps)", value=10000)
+  area = st.text_input("Area (Lawyer, Real Estate")
+  cidade = st.text_input("City (ex: Brasilia, Miami..)")
+  radius = st.number_input("Radius (km)", value=10)
+
+  radius = radius * 1000
   
   num_resultados = 20
   delay = 1
 
 else:
-  st.info("Por favor, insira a sua SerpApi API Key para continuar.")
+  st.info("Please, insert your SerpApi API Key to continue.")
 
 def buscar_leads(area, cidade, num_resultados, api_key, delay=2):
-    """
-    Consulta o Google Maps via SerpApi e retorna leads básicos com paginação.
-    """
+
     query = f"{area} em {cidade}"
     per_page = 20
     dados = []
@@ -119,14 +119,14 @@ def gerar_dataframe_completo(area, cidade, num_resultados, api_key, delay=1):
     return df
 
 # Botão para buscar
-if st.button("🔍 Buscar Leads"):
+if st.button("Search Leads"):
     if not area or not cidade or not SERPAPI_KEY:
-        st.warning("Por favor, preencha todos os campos!")
+        st.warning("Please, fill in all fields!")
     else:
-        with st.spinner("Buscando leads..."):
+        with st.spinner("Searching leads..."):
             df_leads = gerar_dataframe_completo(area, cidade, num_resultados, SERPAPI_KEY, delay)
             if df_leads.empty:
-                st.info("Nenhum lead encontrado para os critérios informados.")
+                st.info("No leads found.")
             else:
                 st.success(f"{len(df_leads)} leads encontrados!")
                 st.dataframe(df_leads)

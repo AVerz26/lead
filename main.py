@@ -16,7 +16,7 @@ SERPAPI_KEY = st.text_input("SerpApi API Key", type="password")
 if SERPAPI_KEY:
 
   # Inputs do usuário
-  area = st.text_input("Area (Lawyer, Real Estate")
+  area = st.text_input("Area (Lawyer, Real Estate..)")
   cidade = st.text_input("City (ex: Brasilia, Miami..)")
   radius = st.number_input("Radius (km)", value=10)
 
@@ -50,12 +50,12 @@ def buscar_leads(area, cidade, num_resultados, api_key, delay=2):
 
         for lead in leads:
             dados.append({
-                "nome": lead.get("title"),
-                "telefone": lead.get("phone"),
+                "name": lead.get("title"),
+                "phone": lead.get("phone"),
                 "site": lead.get("website"),
-                "endereco": lead.get("address"),
+                "address": lead.get("address"),
                 "rating": lead.get("rating"),
-                "avaliacoes": lead.get("reviews"),
+                "reviews": lead.get("reviews"),
                 "coordenadas": lead.get("gps_coordinates")
             })
 
@@ -128,7 +128,9 @@ if st.button("Search Leads"):
             if df_leads.empty:
                 st.info("No leads found.")
             else:
-                st.success(f"{len(df_leads)} leads encontrados!")
+                st.success(f"{len(df_leads)} leads founded!")
+                v = df_leads.copy()
+                v = v.drop(columns=["latitude", "longitude", "coordenadas"])
                 st.dataframe(df_leads)
                 
                 # garante que coordenadas seja dicionário

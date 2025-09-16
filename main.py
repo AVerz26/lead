@@ -9,7 +9,7 @@ import ast
 
 st.set_page_config(page_title="Leads Finder", layout="wide")
 
-st.title("Leads Researching")
+st.title("Leads Finder App")
 
 SERPAPI_KEY = st.text_input("SerpApi API Key", type="password")
 

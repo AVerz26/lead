@@ -34,15 +34,15 @@ def buscar_leads(area, cidade, num_resultados, api_key, delay=2):
     per_page = 20
     dados = []
 
-    for start in range(0, num_resultados, per_page):
+    for starti in range(0, num_resultados, per_page):
         params = {
             "q": query,
             "engine": "google_maps",
-            "google_domain": "google.com.br",
+            "type": "search",
             "hl": "pt",
             "gl": "br",
-            "api_key": api_key,
-            "start": 0
+            "start": starti,
+            "api_key": api_key
         }
 
         search = GoogleSearch(params)

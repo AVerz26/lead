@@ -131,7 +131,7 @@ if st.button("Search Leads"):
                 st.success(f"{len(df_leads)} leads founded!")
                 v = df_leads.copy()
                 v = v.drop(columns=["latitude", "longitude", "coordenadas"])
-                st.dataframe(df_leads)
+                st.dataframe(v)
                 
                 # garante que coordenadas seja dicionário
                 df_leads["coordenadas"] = df_leads["coordenadas"].apply(

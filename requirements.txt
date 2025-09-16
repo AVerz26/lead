@@ -1,6 +1,6 @@
 streamlit
 pandas
 requests
-serpapi>=2.0.0
+serpapi
 beautifulsoup4
 lxml

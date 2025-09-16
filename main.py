@@ -45,6 +45,7 @@ def buscar_leads(area, cidade, num_resultados, api_key):
             "hl": "pt",
             "gl": "br",
             "start": i * 20,
+            "num": num_resultados,
             "api_key": api_key
         })
 

@@ -1,6 +1,6 @@
 streamlit
 pandas
 requests
-serpapi
+git+https://github.com/serpapi/google-search-results-python
 beautifulsoup4
 lxml

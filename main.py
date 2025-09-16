@@ -73,11 +73,10 @@ def buscar_leads(area, cidade, num_resultados, api_key):
         params = {
             "q": query,
             "engine": "google_maps",
-            "google_domain": "google.com.br",
+            "google_domain": "google.com.br",  # opcional
             "hl": "pt",
             "gl": "br",
-            "start": pagina * per_page,
-            "num": per_page
+            "start": pagina * per_page  # paginação: 0, 20, 40...
         }
         try:
             resp = serpapi_search(params, api_key)

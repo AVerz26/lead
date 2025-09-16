@@ -124,5 +124,15 @@ if st.button("🔍 Buscar Leads"):
                 
                 # Mostra mapa
                 mapa_df = df_leads.dropna(subset=["latitude", "longitude"])
-                if not mapa_df.empty:
-                    st.map(mapa_df[["latitude", "longitude"]])
+                import ast  # converte string dict para dict real
+
+                if not df.empty:
+                    # garante que coordenadas seja dicionário
+                    df["coordenadas"] = df["coordenadas"].apply(lambda x: ast.literal_eval(str(x)) if x else {})
+                    
+                    # cria colunas separadas
+                    df["latitude"] = df["coordenadas"].apply(lambda x: x.get("latitude"))
+                    df["longitude"] = df["coordenadas"].apply(lambda x: x.get("longitude"))
+                    
+                    # agora pode mandar pro mapa
+                    st.map(df[["latitude", "longitude"]])

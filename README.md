@@ -42,11 +42,9 @@ All results are stored in a Pandas DataFrame and displayed both in an interactiv
 - **Framework**: [Streamlit](https://streamlit.io/)  
 - **Core Libraries**:  
   - `pandas` → data handling  
-  - `requests` / `httpx` → web requests  
-  - `BeautifulSoup` / `lxml` → website scraping  
+  - `requests` → web requests  
+  - `BeautifulSoup` → website scraping  
   - `re` → regex for emails, phones, and social media links  
-  - `geopy` / API services → geolocation  
-  - `folium` or `pydeck` → map rendering in Streamlit  
   - `serpapi` → Google search results API  
 
 ---
@@ -54,13 +52,11 @@ All results are stored in a Pandas DataFrame and displayed both in an interactiv
 ## Non-Technical Considerations  
 - Requires a valid **SerpAPI key**.  
 - Scraping is limited to **publicly available data**.  
-- Comply with **GDPR/LGPD** when handling personal information.  
-- Implement reasonable request limits to avoid blocking.  
 
 ---
 
 ## Example Use Case  
-- Search for **"restaurants in San Francisco"**.  
+- Search for **"lawyers in San Francisco"**.  
 - SerpAPI returns business names, websites, and addresses.  
 - For each website found, the app scrapes for contact emails, phone numbers, and LinkedIn profiles.  
 - Results are shown in a searchable table and displayed on a map of San Francisco.  

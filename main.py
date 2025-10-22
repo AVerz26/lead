@@ -26,7 +26,7 @@ if SERPAPI_KEY:
   delay = 1
 
 else:
-  st.info("Please, insert your SerpApi API Key to continue.")
+  st.info("Please, insert your SerpApi API Key to continue. If you don't have one, go to this page: https://serpapi.com/users/sign_up")
 
 def buscar_leads(area, cidade, num_resultados, api_key, delay=2):
 
